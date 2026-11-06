@@ -1,5 +1,7 @@
 package com.klinikpro.view.page;
 
+import com.klinikpro.controller.Sesi;
+import com.klinikpro.model.Pengguna;
 import com.klinikpro.view.kit.Avatar;
 import com.klinikpro.view.kit.PanelBulat;
 import com.klinikpro.view.kit.PanelHalaman;
@@ -7,6 +9,7 @@ import com.klinikpro.view.kit.Tema;
 import com.klinikpro.view.kit.Ui;
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.time.format.DateTimeFormatter;
 import javax.swing.JComponent;
 
 /** VIEW: halaman Profil, berisi data akun dan informasi tentang klinik. */
@@ -23,11 +26,18 @@ public class ProfilPanel extends PanelHalaman {
     }
 
     private JComponent kartuAkun() {
-        // Data akun diisi dari tabel pengguna setelah fitur login dibuat (M4).
+        Pengguna p = Sesi.pengguna();
+        String tanggal = p.getTanggalDaftar() == null ? "-"
+                : p.getTanggalDaftar().format(DateTimeFormatter.ofPattern("d MMMM yyyy", Ui.INDONESIA));
+
         PanelBulat kartu = PanelBulat.kartu(24);
-        kartu.add(Ui.baris(16, new Avatar("?", 72, Tema.LATAR, Tema.TEKS_PUDAR),
-                Ui.kolom(4, Ui.judul("Pengguna", 21),
-                        Ui.pudar("Data akun akan tampil setelah fitur login tersedia.", 14))));
+        kartu.setLayout(new BorderLayout(0, 20));
+        kartu.add(Ui.baris(16, new Avatar(p.getInisial(), 72, 0),
+                Ui.kolom(4, Ui.judul(p.getNama(), 21), Ui.pudar("Pasien KlinikPro", 14))), BorderLayout.NORTH);
+        kartu.add(Ui.grid(3, 16,
+                info("Email", p.getEmail()),
+                info("No. telepon", p.getNoTelp()),
+                info("Terdaftar sejak", tanggal)), BorderLayout.CENTER);
         return kartu;
     }
 

@@ -2,6 +2,8 @@ package com.klinikpro.view.page;
 
 import com.klinikpro.model.Dokter;
 import com.klinikpro.controller.DokterController;
+import com.klinikpro.controller.Sesi;
+import com.klinikpro.model.Pengguna;
 import com.klinikpro.view.Halaman;
 import com.klinikpro.view.Navigasi;
 import com.klinikpro.view.kit.Avatar;
@@ -56,8 +58,8 @@ public class BerandaPanel extends PanelHalaman {
     /** Perbarui sapaan dan daftar dokter setiap kali Beranda dibuka. */
     public void segarkan() {
         tanggal.setText(LocalDate.now().format(FORMAT_TANGGAL));
-        // Nama pengguna ditambahkan setelah fitur login dibuat (M4).
-        sapaan.setText(salam() + ", selamat datang di KlinikPro");
+        Pengguna p = Sesi.pengguna();
+        sapaan.setText(salam() + ", " + (p == null ? "selamat datang" : p.getNamaDepan()));
         isiDokter();
     }
 

@@ -1,5 +1,6 @@
 package com.klinikpro;
 
+import com.klinikpro.controller.AuthController;
 import com.klinikpro.controller.DokterController;
 import com.klinikpro.view.JendelaUtama;
 import com.klinikpro.view.kit.Tema;
@@ -31,7 +32,8 @@ public class KlinikProApplication {
             throw ex;
         }
 
+        AuthController authController = ctx.getBean(AuthController.class);
         DokterController dokterController = ctx.getBean(DokterController.class);
-        SwingUtilities.invokeLater(() -> new JendelaUtama(dokterController).setVisible(true));
+        SwingUtilities.invokeLater(() -> new JendelaUtama(authController, dokterController).setVisible(true));
     }
 }

@@ -121,7 +121,7 @@ class KerangkaAplikasi extends JPanel implements Navigasi {
         TombolBulat profil = new TombolBulat(Halaman.PROFIL.judul, Halaman.PROFIL.ikon, TombolBulat.Gaya.MENU);
         profil.addActionListener(e -> buka(Halaman.PROFIL));
         tombolMenu.put(Halaman.PROFIL, profil);
-        TombolBulat keluar = new TombolBulat("Keluar", "keluar", TombolBulat.Gaya.MENU_BAHAYA);
+        TombolBulat keluar = new TombolBulat("Logout", "keluar", TombolBulat.Gaya.MENU_BAHAYA);
         keluar.addActionListener(e -> keluar());
         JPanel bawah = Ui.transparan(new GridLayout(0, 1, 0, 4));
         bawah.setBorder(new CompoundBorder(new MatteBorder(1, 0, 0, 0, Tema.GARIS), new EmptyBorder(14, 0, 0, 0)));
@@ -153,11 +153,10 @@ class KerangkaAplikasi extends JPanel implements Navigasi {
 
     @Override
     public void keluar() {
-        int pilih = JOptionPane.showConfirmDialog(this, "Yakin ingin keluar dari aplikasi?",
-                "Keluar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int pilih = JOptionPane.showConfirmDialog(this, "Yakin ingin keluar dari akun Anda?",
+                "Logout", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (pilih == JOptionPane.YES_OPTION) {
-            jendela.dispose();
-            System.exit(0);
+            jendela.keluar();
         }
     }
 }
