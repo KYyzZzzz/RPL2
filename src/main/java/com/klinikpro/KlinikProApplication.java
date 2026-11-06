@@ -1,40 +1,37 @@
 package com.klinikpro;
 
+import com.klinikpro.controller.DokterController;
+import com.klinikpro.view.JendelaUtama;
+import com.klinikpro.view.kit.Tema;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
 
+/**
+ * Titik awal aplikasi: menyalakan Spring dan Hibernate (koneksi database),
+ * lalu membuka View dengan Controller yang sudah siap.
+ */
 @SpringBootApplication
 public class KlinikProApplication {
 
     public static void main(String[] args) {
-        System.out.println(">>> MAIN VERSI BARU DIMULAI");
-        ConfigurableApplicationContext ctx = new SpringApplicationBuilder(KlinikProApplication.class)
-                .headless(false)
-                .run(args);
-        DokterRepository dokterRepo = ctx.getBean(DokterRepository.class);
-        SwingUtilities.invokeLater(() -> {
-            try {
-                System.out.println(">>> Membuka jendela KlinikPro...");
-                MenuUtama menu = new MenuUtama(dokterRepo);
-                menu.setVisible(true);
-                menu.toFront();
-                System.out.println(">>> Jendela KlinikPro terbuka.");
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-        });
-    }
+        Tema.pasang();
+        ConfigurableApplicationContext ctx;
+        try {
+            ctx = new SpringApplicationBuilder(KlinikProApplication.class)
+                    .headless(false)
+                    .run(args);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Aplikasi tidak bisa terhubung ke database.\n"
+                    + "Pastikan MySQL di XAMPP sudah menyala dan database 'klinikpro' sudah dibuat.",
+                    "KlinikPro", JOptionPane.ERROR_MESSAGE);
+            throw ex;
+        }
 
-    @Bean
-    CommandLineRunner tesKoneksi(JdbcTemplate jdbc) {
-        return args -> {
-            Integer n = jdbc.queryForObject("SELECT COUNT(*) FROM dokter", Integer.class);
-            System.out.println("Koneksi berhasil. Jumlah dokter: " + n);
-        };
+        DokterController dokterController = ctx.getBean(DokterController.class);
+        SwingUtilities.invokeLater(() -> new JendelaUtama(dokterController).setVisible(true));
     }
 }
