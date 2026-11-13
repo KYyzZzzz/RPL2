@@ -43,5 +43,23 @@
             <artifactId>flatlaf</artifactId>
             <version>3.5.4</version>
         </dependency>
+
+        <!-- Hibernate ORM dan Spring (versi diatur otomatis oleh Spring Boot) -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
     </dependencies>
 </project>

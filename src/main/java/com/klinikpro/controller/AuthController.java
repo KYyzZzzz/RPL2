@@ -5,6 +5,7 @@ import com.klinikpro.repository.PenggunaRepository;
 import java.util.regex.Pattern;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional; // BARU
 
 /** CONTROLLER: aturan registrasi dan login. */
 @Controller
@@ -20,6 +21,8 @@ public class AuthController {
         this.penggunaRepository = penggunaRepository;
     }
 
+    // BARU: Declarative Transaction, jika gagal di tengah jalan maka otomatis rollback
+    @Transactional
     public Pengguna registrasi(String nama, String email, String noTelp,
             String password, String konfirmasi) throws ValidasiException {
         nama = nama.trim();
@@ -37,6 +40,8 @@ public class AuthController {
         return penggunaRepository.save(baru);   // ORM: INSERT dibuat otomatis oleh Hibernate
     }
 
+    // BARU: transaksi khusus baca data (tidak mengubah database)
+    @Transactional(readOnly = true)
     public Pengguna login(String email, String password) throws ValidasiException {
         if (email.isBlank() || password.isEmpty()) throw new ValidasiException("Email dan password wajib diisi.");
         Pengguna p = penggunaRepository.findByEmailIgnoreCase(email.trim())

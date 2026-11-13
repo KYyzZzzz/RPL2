@@ -9,12 +9,14 @@ import javax.swing.SwingUtilities;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ImportResource; // BARU
 
 /**
  * Titik awal aplikasi: menyalakan Spring dan Hibernate (koneksi database),
  * lalu membuka View dengan Controller yang sudah siap.
  */
 @SpringBootApplication
+@ImportResource("classpath:applicationContext.xml") // BARU: membaca konfigurasi Spring dari XML
 public class KlinikProApplication {
 
     public static void main(String[] args) {
