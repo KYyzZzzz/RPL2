@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Desain laporan Riwayat Janji Temu KlinikPro. Bisa dibuka dan diubah di Jaspersoft Studio. -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="RiwayatJanji" language="java" pageWidth="595" pageHeight="842" columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              whenNoDataType="AllSectionsNoDetail">
+
+    <!-- Parameter dari program Java (LaporanService) -->
+    <parameter name="PENGGUNA_ID" class="java.lang.Integer"/>
+    <parameter name="NAMA_PASIEN" class="java.lang.String"/>
+    <parameter name="EMAIL_PASIEN" class="java.lang.String"/>
+
+    <!-- Query: janji milik pasien yang login, digabung dengan data dokter -->
+    <queryString language="SQL">
+        <![CDATA[SELECT j.tanggal, j.jam, j.no_antrean, j.status, j.keluhan,
+       d.id AS dokter_id, d.nama AS dokter, d.spesialis, d.tarif
+FROM janji j
+JOIN dokter d ON d.id = j.dokter_id
+WHERE j.pengguna_id = $P{PENGGUNA_ID}
+ORDER BY j.tanggal, j.jam]]>
+    </queryString>
+
+    <field name="tanggal" class="java.util.Date"/>
+    <field name="jam" class="java.sql.Time"/>
+    <field name="no_antrean" class="java.lang.Integer"/>
+    <field name="status" class="java.lang.String"/>
+    <field name="keluhan" class="java.lang.String"/>
+    <field name="dokter_id" class="java.lang.Integer"/>
+    <field name="dokter" class="java.lang.String"/>
+    <field name="spesialis" class="java.lang.String"/>
+    <field name="tarif" class="java.math.BigDecimal"/>
+
+    <!-- Total biaya (janji yang dibatalkan tidak dihitung) -->
+    <variable name="TOTAL_BIAYA" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA["dibatalkan".equals($F{status}) ? java.math.BigDecimal.ZERO : $F{tarif}]]></variableExpression>
+    </variable>
+    <variable name="JUMLAH_AKTIF" class="java.lang.Integer" calculation="Sum">
+        <variableExpression><![CDATA[Integer.valueOf("dibatalkan".equals($F{status}) ? 0 : 1)]]></variableExpression>
+    </variable>
+
+    <title>
+        <band height="128">
+            <frame>
+                <reportElement mode="Opaque" x="0" y="0" width="555" height="64" backcolor="#1F6F68"/>
+                <staticText>
+                    <reportElement x="16" y="10" width="300" height="26" forecolor="#FFFFFF"/>
+                    <textElement verticalAlignment="Middle">
+                        <font fontName="SansSerif" size="20" isBold="true"/>
+                    </textElement>
+                    <text><![CDATA[KlinikPro]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="16" y="36" width="300" height="18" forecolor="#D6ECE8"/>
+                    <textElement verticalAlignment="Middle">
+                        <font fontName="SansSerif" size="11"/>
+                    </textElement>
+                    <text><![CDATA[Laporan Riwayat Janji Temu]]></text>
+                </staticText>
+                <textField>
+                    <reportElement x="330" y="36" width="210" height="18" forecolor="#D6ECE8"/>
+                    <textElement textAlignment="Right" verticalAlignment="Middle">
+                        <font fontName="SansSerif" size="9"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Dicetak: " + new java.text.SimpleDateFormat("d MMMM yyyy, HH:mm", $P{REPORT_LOCALE}).format(new java.util.Date())]]></textFieldExpression>
+                </textField>
+            </frame>
+            <staticText>
+                <reportElement x="0" y="76" width="90" height="16" forecolor="#5B6967"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement>
+                <text><![CDATA[Nama pasien]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="90" y="76" width="300" height="16"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[": " + $P{NAMA_PASIEN}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="94" width="90" height="16" forecolor="#5B6967"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement>
+                <text><![CDATA[Email]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="90" y="94" width="300" height="16"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement>
+                <textFieldExpression><![CDATA[": " + $P{EMAIL_PASIEN}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="24">
+            <frame>
+                <reportElement mode="Opaque" x="0" y="0" width="555" height="24" backcolor="#E3F1EF"/>
+                <staticText>
+                    <reportElement x="0" y="0" width="25" height="24" forecolor="#17564F"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[No]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="25" y="0" width="80" height="24" forecolor="#17564F"/>
+                    <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[Tanggal]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="105" y="0" width="40" height="24" forecolor="#17564F"/>
+                    <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[Jam]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="145" y="0" width="140" height="24" forecolor="#17564F"/>
+                    <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[Dokter]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="285" y="0" width="85" height="24" forecolor="#17564F"/>
+                    <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[Spesialis]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="370" y="0" width="50" height="24" forecolor="#17564F"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[Antrean]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="420" y="0" width="65" height="24" forecolor="#17564F"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[Status]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="485" y="0" width="64" height="24" forecolor="#17564F"/>
+                    <textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                    <text><![CDATA[Biaya]]></text>
+                </staticText>
+            </frame>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="22">
+            <rectangle>
+                <reportElement mode="Opaque" x="0" y="0" width="555" height="22" forecolor="#F4F7F6" backcolor="#F4F7F6">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="0" y="0" width="25" height="22"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement>
+                <textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+            </textField>
+            <textField pattern="d MMM yyyy">
+                <reportElement x="25" y="0" width="80" height="22"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement>
+                <textFieldExpression><![CDATA[$F{tanggal}]]></textFieldExpression>
+            </textField>
+            <textField pattern="HH:mm">
+                <reportElement x="105" y="0" width="40" height="22"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement>
+                <textFieldExpression><![CDATA[$F{jam}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="145" y="0" width="140" height="22"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{dokter}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="285" y="0" width="85" height="22"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement>
+                <textFieldExpression><![CDATA[$F{spesialis}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="370" y="0" width="50" height="22"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[String.format("%c-%02d", (char) ('A' + ($F{dokter_id} - 1) % 26), $F{no_antrean})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="420" y="0" width="65" height="22" forecolor="#17564F">
+                    <printWhenExpression><![CDATA[!"dibatalkan".equals($F{status})]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement>
+                <textFieldExpression><![CDATA["selesai".equals($F{status}) ? "Selesai" : "Terjadwal"]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="420" y="0" width="65" height="22" forecolor="#A6402A">
+                    <printWhenExpression><![CDATA["dibatalkan".equals($F{status})]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement>
+                <text><![CDATA[Dibatalkan]]></text>
+            </staticText>
+            <textField pattern="Rp #,##0" isBlankWhenNull="true">
+                <reportElement x="485" y="0" width="64" height="22"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement>
+                <textFieldExpression><![CDATA["dibatalkan".equals($F{status}) ? null : $F{tarif}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <pageFooter>
+        <band height="24">
+            <textField>
+                <reportElement x="355" y="4" width="160" height="16" forecolor="#5B6967"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari"]]></textFieldExpression>
+            </textField>
+            <textField evaluationTime="Report">
+                <reportElement x="515" y="4" width="40" height="16" forecolor="#5B6967"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="4" width="300" height="16" forecolor="#5B6967"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <text><![CDATA[KlinikPro - Laporan Riwayat Janji Temu]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
+
+    <summary>
+        <band height="70">
+            <line>
+                <reportElement x="0" y="6" width="555" height="1" forecolor="#DDE6E4"/>
+            </line>
+            <textField>
+                <reportElement x="0" y="14" width="400" height="18"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement>
+                <textFieldExpression><![CDATA[$V{REPORT_COUNT} == 0 ? "Belum ada janji temu." : "Jumlah janji: " + $V{REPORT_COUNT} + " (aktif/selesai: " + $V{JUMLAH_AKTIF} + ", dibatalkan: " + ($V{REPORT_COUNT} - $V{JUMLAH_AKTIF}) + ")"]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="330" y="36" width="130" height="22" forecolor="#17564F"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="11" isBold="true"/></textElement>
+                <text><![CDATA[Total biaya:]]></text>
+            </staticText>
+            <textField pattern="Rp #,##0">
+                <reportElement x="460" y="36" width="89" height="22" forecolor="#17564F"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="11" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{TOTAL_BIAYA} == null ? java.math.BigDecimal.ZERO : $V{TOTAL_BIAYA}]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>

@@ -4,9 +4,11 @@ import com.klinikpro.model.Dokter;
 import com.klinikpro.model.Janji;
 import com.klinikpro.model.Pengguna;
 import com.klinikpro.service.JanjiService;
+import com.klinikpro.service.LaporanService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -18,9 +20,11 @@ import org.springframework.stereotype.Controller;
 public class JanjiController {
 
     private final JanjiService janjiService;
+    private final LaporanService laporanService;
 
-    public JanjiController(JanjiService janjiService) {
+    public JanjiController(JanjiService janjiService, LaporanService laporanService) {
         this.janjiService = janjiService;
+        this.laporanService = laporanService;
     }
 
     public List<LocalDate> tanggalPraktik(Dokter dokter) {
@@ -62,6 +66,17 @@ public class JanjiController {
                     isiKeluhan.isEmpty() ? null : isiKeluhan);
         } catch (IllegalArgumentException ex) {
             throw new ValidasiException(ex.getMessage());
+        }
+    }
+
+    /** Laporan JasperReports berisi riwayat janji temu pasien yang sedang login. */
+    public JasperPrint cetakRiwayat() throws ValidasiException {
+        Pengguna p = Sesi.pengguna();
+        if (p == null) throw new ValidasiException("Silakan login terlebih dahulu.");
+        try {
+            return laporanService.riwayatJanji(p);
+        } catch (Exception ex) {
+            throw new ValidasiException("Gagal membuat laporan: " + ex.getMessage());
         }
     }
 

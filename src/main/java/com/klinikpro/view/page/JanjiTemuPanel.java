@@ -15,6 +15,7 @@ import com.klinikpro.view.kit.Ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
@@ -35,6 +36,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 /** VIEW: halaman Janji Temu: daftar janji pasien dan form untuk membuat janji baru. */
 public class JanjiTemuPanel extends PanelHalaman {
@@ -53,6 +56,7 @@ public class JanjiTemuPanel extends PanelHalaman {
     private final JTextArea kolomKeluhan = new JTextArea(3, 20);
     private final JLabel labelBiaya = Ui.teks("-", 15, Font.BOLD, Tema.TEKS);
     private final JLabel pesanSalah = Ui.teks(" ", 13, Font.BOLD, Tema.BAHAYA);
+    private final TombolBulat tombolCetak = new TombolBulat("Cetak Laporan", "dokumen", TombolBulat.Gaya.GARIS);
 
     private List<Janji> semuaJanji = new ArrayList<>();
     private int tabAktif = 0;
@@ -69,6 +73,7 @@ public class JanjiTemuPanel extends PanelHalaman {
         }
         pilihanDokter.setRenderer(tampilan(o -> ((Dokter) o).getNama() + " (" + ((Dokter) o).getSpesialis() + ")"));
         pilihanTanggal.setRenderer(tampilan(o -> ((LocalDate) o).format(FORMAT_TANGGAL)));
+        tombolCetak.addActionListener(e -> cetakLaporan());
         pilihanDokter.addActionListener(e -> isiTanggal());
         pilihanTanggal.addActionListener(e -> isiJam());
 
@@ -188,6 +193,19 @@ public class JanjiTemuPanel extends PanelHalaman {
         }
     }
 
+    /** Tampilkan laporan JasperReports riwayat janji temu di jendela preview. */
+    private void cetakLaporan() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        try {
+            JasperPrint laporan = janjiController.cetakRiwayat();
+            JasperViewer.viewReport(laporan, false);   // false: menutup laporan tidak menutup aplikasi
+        } catch (ValidasiException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Cetak Laporan", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            setCursor(Cursor.getDefaultCursor());
+        }
+    }
+
     // ---------- Daftar janji ----------
     /** 0 = akan datang, 1 = selesai (atau tanggalnya sudah lewat), 2 = dibatalkan. */
     private static int kategori(Janji j) {
@@ -213,7 +231,7 @@ public class JanjiTemuPanel extends PanelHalaman {
             });
             tombol[i] = t;
         }
-        ganti(wadahTab, Ui.baris(8, tombol));
+        ganti(wadahTab, Ui.kiriKanan(Ui.baris(8, tombol), tombolCetak, 8));
     }
 
     private void isiDaftar() {
