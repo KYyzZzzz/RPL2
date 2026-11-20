@@ -2,6 +2,7 @@ package com.klinikpro.view;
 
 import com.klinikpro.controller.AuthController;
 import com.klinikpro.controller.DokterController;
+import com.klinikpro.controller.JanjiController;
 import com.klinikpro.controller.Sesi;
 import com.klinikpro.model.Pengguna;
 import com.klinikpro.view.kit.Tema;
@@ -14,14 +15,17 @@ import javax.swing.JPanel;
 public class JendelaUtama extends JFrame {
 
     private final DokterController dokterController;
+    private final JanjiController janjiController;
     private final CardLayout tumpukan = new CardLayout();
     private final JPanel akar = new JPanel(tumpukan);
     private final PanelMasuk panelMasuk;
     private KerangkaAplikasi kerangka;
 
-    public JendelaUtama(AuthController authController, DokterController dokterController) {
+    public JendelaUtama(AuthController authController, DokterController dokterController,
+            JanjiController janjiController) {
         super("KlinikPro");
         this.dokterController = dokterController;
+        this.janjiController = janjiController;
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1100, 700));
         setSize(1280, 800);
@@ -50,7 +54,7 @@ public class JendelaUtama extends JFrame {
         if (kerangka != null) {
             akar.remove(kerangka);
         }
-        kerangka = new KerangkaAplikasi(this, dokterController);
+        kerangka = new KerangkaAplikasi(this, dokterController, janjiController);
         akar.add(kerangka, "aplikasi");
         tumpukan.show(akar, "aplikasi");
     }

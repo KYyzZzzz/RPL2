@@ -2,6 +2,7 @@ package com.klinikpro;
 
 import com.klinikpro.controller.AuthController;
 import com.klinikpro.controller.DokterController;
+import com.klinikpro.controller.JanjiController;
 import com.klinikpro.view.JendelaUtama;
 import com.klinikpro.view.kit.Tema;
 import javax.swing.JOptionPane;
@@ -36,6 +37,8 @@ public class KlinikProApplication {
 
         AuthController authController = ctx.getBean(AuthController.class);
         DokterController dokterController = ctx.getBean(DokterController.class);
-        SwingUtilities.invokeLater(() -> new JendelaUtama(authController, dokterController).setVisible(true));
+        JanjiController janjiController = ctx.getBean(JanjiController.class);
+        SwingUtilities.invokeLater(() ->
+                new JendelaUtama(authController, dokterController, janjiController).setVisible(true));
     }
 }

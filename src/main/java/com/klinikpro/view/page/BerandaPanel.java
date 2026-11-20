@@ -2,6 +2,8 @@ package com.klinikpro.view.page;
 
 import com.klinikpro.model.Dokter;
 import com.klinikpro.controller.DokterController;
+import com.klinikpro.controller.JanjiController;
+import com.klinikpro.model.Janji;
 import com.klinikpro.controller.Sesi;
 import com.klinikpro.model.Pengguna;
 import com.klinikpro.view.Halaman;
@@ -37,13 +39,17 @@ public class BerandaPanel extends PanelHalaman {
 
     private final Navigasi navigasi;
     private final DokterController dokterController;
+    private final JanjiController janjiController;
+    private final JLabel judulJanji = Ui.teks("", 21, Font.BOLD, Color.WHITE);
+    private final JLabel keteranganJanji = Ui.teks("", 14, Font.PLAIN, Tema.UTAMA_MUDA);
     private final JLabel tanggal = Ui.pudar("", 14);
     private final JLabel sapaan = Ui.judul("", 26);
     private final JPanel wadahDokter = Ui.transparan(new BorderLayout());
 
-    public BerandaPanel(Navigasi navigasi, DokterController dokterController) {
+    public BerandaPanel(Navigasi navigasi, DokterController dokterController, JanjiController janjiController) {
         this.navigasi = navigasi;
         this.dokterController = dokterController;
+        this.janjiController = janjiController;
 
         add(buatKepala(), BorderLayout.NORTH);
 
@@ -60,7 +66,26 @@ public class BerandaPanel extends PanelHalaman {
         tanggal.setText(LocalDate.now().format(FORMAT_TANGGAL));
         Pengguna p = Sesi.pengguna();
         sapaan.setText(salam() + ", " + (p == null ? "selamat datang" : p.getNamaDepan()));
+        isiJanjiBerikutnya();
         isiDokter();
+    }
+
+    /** Kartu hijau di atas: tampilkan janji terdekat dari database, atau ajakan membuat janji. */
+    private void isiJanjiBerikutnya() {
+        Janji j = janjiController.janjiBerikutnya();
+        if (j == null) {
+            judulJanji.setText("Belum ada janji temu");
+            keteranganJanji.setText(lebar("Pilih dokter, tentukan jadwal, dan ambil nomor antrean dari rumah."));
+        } else {
+            judulJanji.setText(j.getDokter().getNama());
+            keteranganJanji.setText(lebar(j.getTanggal().format(FORMAT_TANGGAL) + ", pukul "
+                    + j.getJam().format(DateTimeFormatter.ofPattern("HH:mm"))
+                    + " · Nomor antrean " + j.getKodeAntrean()));
+        }
+    }
+
+    private static String lebar(String isi) {
+        return "<html><div style='width:280px'>" + isi + "</div></html>";
     }
 
     private static String salam() {
@@ -95,9 +120,8 @@ public class BerandaPanel extends PanelHalaman {
 
         banner.add(Ui.kolom(6,
                 Ui.teks("JANJI TEMU BERIKUTNYA", 13, Font.BOLD, Tema.TEKS_DI_UTAMA),
-                Ui.teks("Belum ada janji temu", 21, Font.BOLD, Color.WHITE),
-                Ui.paragraf("Pilih dokter, tentukan jadwal, dan ambil nomor antrean dari rumah.",
-                        280, 14, Tema.UTAMA_MUDA),
+                judulJanji,
+                keteranganJanji,
                 Ui.baris(0, buatJanji)), BorderLayout.CENTER);
         banner.add(new Ilustrasi(Ilustrasi.Jenis.KLINIK, 190, 130, Tema.UTAMA_BANNER), BorderLayout.EAST);
         return banner;

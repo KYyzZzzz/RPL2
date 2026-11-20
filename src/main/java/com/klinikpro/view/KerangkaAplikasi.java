@@ -1,6 +1,8 @@
 package com.klinikpro.view;
 
 import com.klinikpro.controller.DokterController;
+import com.klinikpro.controller.JanjiController;
+import com.klinikpro.model.Dokter;
 import com.klinikpro.view.kit.Ikon;
 import com.klinikpro.view.kit.PanelBulat;
 import com.klinikpro.view.kit.PanelHalaman;
@@ -9,6 +11,7 @@ import com.klinikpro.view.kit.TombolBulat;
 import com.klinikpro.view.kit.Ui;
 import com.klinikpro.view.page.BerandaPanel;
 import com.klinikpro.view.page.CariDokterPanel;
+import com.klinikpro.view.page.JanjiTemuPanel;
 import com.klinikpro.view.page.ProfilPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -36,21 +39,19 @@ class KerangkaAplikasi extends JPanel implements Navigasi {
     private final Map<Halaman, TombolBulat> tombolMenu = new EnumMap<>(Halaman.class);
     private final BerandaPanel beranda;
     private final CariDokterPanel cariDokter;
+    private final JanjiTemuPanel janjiTemu;
 
-    KerangkaAplikasi(JendelaUtama jendela, DokterController dokterController) {
+    KerangkaAplikasi(JendelaUtama jendela, DokterController dokterController, JanjiController janjiController) {
         super(new BorderLayout());
         this.jendela = jendela;
 
-        beranda = new BerandaPanel(this, dokterController);
+        beranda = new BerandaPanel(this, dokterController, janjiController);
         cariDokter = new CariDokterPanel(this, dokterController);
+        janjiTemu = new JanjiTemuPanel(janjiController, dokterController);
 
         tambah(Halaman.BERANDA, beranda);
         tambah(Halaman.CARI_DOKTER, cariDokter);
-        tambah(Halaman.JANJI_TEMU, halamanKosong(Halaman.JANJI_TEMU,
-                "Kelola janji temu dan ambil nomor antrean dari rumah",
-                "Belum ada janji temu",
-                "Pilih dokter di menu Cari Dokter, lalu buat janji untuk mendapatkan nomor antrean.",
-                "Cari Dokter", Halaman.CARI_DOKTER));
+        tambah(Halaman.JANJI_TEMU, janjiTemu);
         tambah(Halaman.REKAM_MEDIS, halamanKosong(Halaman.REKAM_MEDIS,
                 "Riwayat pemeriksaan Anda di KlinikPro",
                 "Belum ada rekam medis",
@@ -142,6 +143,9 @@ class KerangkaAplikasi extends JPanel implements Navigasi {
         if (halaman == Halaman.BERANDA) {
             beranda.segarkan();
         }
+        if (halaman == Halaman.JANJI_TEMU) {
+            janjiTemu.segarkan();
+        }
         tumpukan.show(isi, halaman.name());
     }
 
@@ -149,6 +153,12 @@ class KerangkaAplikasi extends JPanel implements Navigasi {
     public void cariDokter(String kataKunci) {
         cariDokter.cari(kataKunci);
         buka(Halaman.CARI_DOKTER);
+    }
+
+    @Override
+    public void buatJanji(Dokter dokter) {
+        janjiTemu.pilihDokter(dokter);
+        buka(Halaman.JANJI_TEMU);
     }
 
     @Override

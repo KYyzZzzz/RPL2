@@ -3,7 +3,6 @@ package com.klinikpro.view.page;
 import com.klinikpro.model.Dokter;
 import com.klinikpro.model.JadwalDokter;
 import com.klinikpro.controller.DokterController;
-import com.klinikpro.view.Halaman;
 import com.klinikpro.view.Navigasi;
 import com.klinikpro.view.kit.Avatar;
 import com.klinikpro.view.kit.KolomIsian;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -199,12 +197,7 @@ public class CariDokterPanel extends PanelHalaman {
 
         TombolBulat buatJanji = new TombolBulat("Buat Janji dengan Dokter Ini", TombolBulat.Gaya.UTAMA);
         buatJanji.setPreferredSize(new Dimension(296, 48));
-        buatJanji.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this,
-                    "Fitur buat janji dengan " + d.getNama() + " akan aktif pada tahap berikutnya.",
-                    "Buat Janji", JOptionPane.INFORMATION_MESSAGE);
-            navigasi.buka(Halaman.JANJI_TEMU);
-        });
+        buatJanji.addActionListener(e -> navigasi.buatJanji(d));
 
         JPanel badan = Ui.kolom(16,
                 Ui.kolom(6, Ui.teks("TENTANG DOKTER", 13, Font.BOLD, Tema.TEKS_PUDAR),
